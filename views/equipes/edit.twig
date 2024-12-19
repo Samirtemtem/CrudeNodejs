@@ -1,0 +1,62 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Modifier Équipe{% endblock %}
+
+{% block content %}
+    <h1>Modifier Équipe</h1>
+
+    <form id="editEquipeForm">
+        <div class="mb-3">
+            <label for="nomEquipe" class="form-label">Nom de l'équipe</label>
+            <input type="text" class="form-control" id="nomEquipe" name="nomEquipe" required 
+                   value="{{ equipe.nomEquipe }}">
+        </div>
+        <div class="mb-3">
+            <label for="ville" class="form-label">Ville</label>
+            <input type="text" class="form-control" id="ville" name="ville"
+                   value="{{ equipe.ville }}">
+        </div>
+        <div class="mb-3">
+            <label for="creationDate" class="form-label">Date de création</label>
+            <input type="date" class="form-control" id="creationDate" name="creationDate"
+                   value="{{ equipe.creationDate|date('Y-m-d') }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+        <a href="/equipes" class="btn btn-secondary">Annuler</a>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById('editEquipeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                nomEquipe: document.getElementById('nomEquipe').value,
+                ville: document.getElementById('ville').value,
+                creationDate: document.getElementById('creationDate').value
+            };
+
+            try {
+                const response = await fetch('/equipes/api/update/{{ equipe._id }}', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    toastr.success(data.message);
+                    setTimeout(() => window.location.href = '/equipes', 1000);
+                } else {
+                    toastr.error(data.message);
+                }
+            } catch (error) {
+                toastr.error('Une erreur est survenue');
+            }
+        });
+    </script>
+{% endblock %} 

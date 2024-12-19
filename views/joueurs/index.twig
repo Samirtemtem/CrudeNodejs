@@ -1,0 +1,63 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Liste des Joueurs{% endblock %}
+
+{% block content %}
+    <h1>Liste des Joueurs</h1>
+    <a href="/joueurs/create" class="btn btn-primary mb-3">Nouveau Joueur</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Équipe</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for joueur in joueurs %}
+                <tr id="joueur-{{ joueur._id }}">
+                    <td>{{ joueur.nom }}</td>
+                    <td>{{ joueur.prenom }}</td>
+                    <td>{{ joueur.age }}</td>
+                    <td>{{ joueur.email }}</td>
+                    <td>{{ joueur.equipe ? joueur.equipe.nomEquipe : 'Non assigné' }}</td>
+                    <td>
+                        <a href="/joueurs/edit/{{ joueur._id }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <button onclick="deleteJoueur('{{ joueur._id }}')" class="btn btn-sm btn-danger">Supprimer</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        async function deleteJoueur(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/joueurs/api/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    toastr.success(data.message);
+                    document.getElementById(`joueur-${id}`).remove();
+                } else {
+                    toastr.error(data.message);
+                }
+            } catch (error) {
+                toastr.error('Une erreur est survenue');
+            }
+        }
+    </script>
+{% endblock %} 

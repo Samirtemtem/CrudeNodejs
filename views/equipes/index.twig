@@ -1,0 +1,59 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Liste des Équipes{% endblock %}
+
+{% block content %}
+    <h1>Liste des Équipes</h1>
+    <a href="/equipes/create" class="btn btn-primary mb-3">Nouvelle Équipe</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Ville</th>
+                <th>Date de création</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equipe in equipes %}
+                <tr id="equipe-{{ equipe._id }}">
+                    <td>{{ equipe.nomEquipe }}</td>
+                    <td>{{ equipe.ville }}</td>
+                    <td>{{ equipe.creationDate|date('Y-m-d') }}</td>
+                    <td>
+                        <a href="/equipes/edit/{{ equipe._id }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <button onclick="deleteEquipe('{{ equipe._id }}')" class="btn btn-sm btn-danger">Supprimer</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        async function deleteEquipe(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/equipes/api/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    toastr.success(data.message);
+                    document.getElementById(`equipe-${id}`).remove();
+                } else {
+                    toastr.error(data.message);
+                }
+            } catch (error) {
+                toastr.error('Une erreur est survenue');
+            }
+        }
+    </script>
+{% endblock %} 

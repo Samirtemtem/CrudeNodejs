@@ -1,0 +1,14 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Erreur{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{ message }}</h1>
+        <h2>{{ error.status }}</h2>
+        {% if error.stack %}
+            <pre>{{ error.stack }}</pre>
+        {% endif %}
+        <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+    </div>
+{% endblock %} 
